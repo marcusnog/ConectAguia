@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm init *)",
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "mcp__obsidian__obsidian_list_files_in_vault",
+      "Bash(npx tsc *)",
+      "Bash(psql -U postgres -c \"\\\\conninfo\")",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "Bash(docker volume *)",
+      "Bash(timeout 15)",
+      "Bash(Start-Sleep -Seconds 12)",
+      "Bash(curl -s http://localhost:3001/health)"
+    ]
+  }
+}

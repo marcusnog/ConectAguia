@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Manager {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("managers")
+}
+
+model Provider {
+  id                 String         @id @default(cuid())
+  name               String
+  documentType       DocumentType   @map("document_type")
+  document           String         @unique
+  email              String         @unique
+  phone              String
+  address            String?
+  city               String?
+  state              String?
+  zipCode            String?        @map("zip_code")
+  serviceType        String         @map("service_type")
+  serviceDescription String?        @map("service_description")
+  status             ProviderStatus @default(PENDING)
+  termsAccepted      Boolean        @map("terms_accepted")
+  termsVersion       String         @map("terms_version")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+
+  consentLogs ConsentLog[]
+
+  @@map("providers")
+}
+
+model ConsentLog {
+  id           String   @id @default(cuid())
+  providerId   String   @map("provider_id")
+  provider     Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  ip           String?
+  userAgent    String?  @map("user_agent")
+  termsVersion String   @map("terms_version")
+  acceptedAt   DateTime @default(now()) @map("accepted_at")
+
+  @@map("consent_logs")
+}
+
+enum DocumentType {
+  CPF
+  CNPJ
+}
+
+enum ProviderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
