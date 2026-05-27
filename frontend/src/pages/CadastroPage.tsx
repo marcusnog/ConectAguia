@@ -21,11 +21,7 @@ const schema = z
     phone: z.string().min(14, "Telefone inválido"),
     address: z.string().optional(),
     city: z.string().optional(),
-    state: z
-      .string()
-      .max(2)
-      .optional()
-      .transform((v) => v?.toUpperCase()),
+    state: z.string().max(2).optional(),
     zipCode: z.string().optional(),
     serviceType: z.string().min(3, "Informe o tipo de serviço"),
     serviceDescription: z.string().optional(),
