@@ -19,16 +19,16 @@ model Manager {
 
 model Provider {
   id                 String         @id @default(cuid())
-  name               String
-  documentType       DocumentType   @map("document_type")
-  document           String         @unique
+  name               String?
+  documentType       DocumentType?  @map("document_type")
+  document           String?        @map("document")
   email              String         @unique
-  phone              String
+  phone              String?
   address            String?
   city               String?
   state              String?
   zipCode            String?        @map("zip_code")
-  serviceType        String         @map("service_type")
+  serviceType        String?        @map("service_type")
   serviceDescription String?        @map("service_description")
   extraFields        Json?          @map("extra_fields")
   status             ProviderStatus @default(PENDING)
@@ -67,6 +67,8 @@ model FormField {
   options     String[]
   minLength   Int?       @map("min_length")
   maxLength   Int?       @map("max_length")
+  isCore      Boolean    @default(false) @map("is_core")
+  isVisible   Boolean    @default(true) @map("is_visible")
   createdAt   DateTime   @default(now()) @map("created_at")
 
   @@map("form_fields")

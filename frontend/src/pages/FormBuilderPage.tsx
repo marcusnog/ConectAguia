@@ -15,6 +15,8 @@ interface FormField {
   options: string[];
   minLength?: number;
   maxLength?: number;
+  isCore: boolean;
+  isVisible: boolean;
 }
 
 interface FormSchema {
@@ -42,7 +44,11 @@ const EMPTY_FIELD: Omit<FormField, "order"> = {
   placeholder: "",
   required: false,
   options: [],
+  isCore: false,
+  isVisible: true,
 };
+
+const LOCKED_KEYS = ["terms_accepted"];
 
 function slugify(str: string) {
   return str
@@ -89,7 +95,7 @@ export default function FormBuilderPage() {
   function handleDraftChange(k: keyof typeof draft, v: unknown) {
     setDraft((prev) => {
       const next = { ...prev, [k]: v };
-      if (k === "label" && editIndex === null) {
+      if (k === "label" && editIndex === null && !prev.isCore) {
         next.key = slugify(v as string);
       }
       return next;
@@ -120,7 +126,15 @@ export default function FormBuilderPage() {
   }
 
   function removeField(index: number) {
+    const field = fields[index];
+    if (field.isCore) return;
     setFields((prev) => prev.filter((_, i) => i !== index).map((f, i) => ({ ...f, order: i })));
+  }
+
+  function toggleVisibility(index: number) {
+    setFields((prev) =>
+      prev.map((f, i) => (i === index ? { ...f, isVisible: !f.isVisible } : f))
+    );
   }
 
   function moveField(index: number, dir: -1 | 1) {
@@ -154,6 +168,8 @@ export default function FormBuilderPage() {
       setPublishing(false);
     }
   }
+
+  const isLocked = (field: FormField) => LOCKED_KEYS.includes(field.key);
 
   return (
     <div className="min-h-screen bg-[#f8f9ff]">
@@ -205,10 +221,10 @@ export default function FormBuilderPage() {
           {/* Card header */}
           <div className="p-6 border-b border-[#c4c6cd] flex justify-between items-center bg-[#eff4ff]/30">
             <div>
-              <h2 className="font-semibold text-lg text-[#0b1c30]">Campos extras do formulário</h2>
+              <h2 className="font-semibold text-lg text-[#0b1c30]">Campos do formulário</h2>
               <p className="text-sm text-[#44474c] mt-1">
-                Campos fixos (nome, documento, e-mail, telefone, tipo de serviço, endereço, LGPD) são sempre exibidos.
-                Adicione campos personalizados abaixo.
+                Campos do sistema podem ter label e visibilidade editados. Campos personalizados podem ser removidos.
+                O campo LGPD é obrigatório e não pode ser ocultado.
               </p>
             </div>
             <button
@@ -223,7 +239,7 @@ export default function FormBuilderPage() {
           {/* Field list */}
           {fields.length === 0 ? (
             <div className="py-16 text-center text-sm text-[#74777d]">
-              Nenhum campo extra adicionado ainda.
+              Nenhum campo adicionado ainda.
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
@@ -238,7 +254,10 @@ export default function FormBuilderPage() {
               </thead>
               <tbody className="divide-y divide-[#c4c6cd]">
                 {fields.map((field, i) => (
-                  <tr key={field.key + i} className="hover:bg-[#eff4ff] transition-colors group">
+                  <tr
+                    key={field.key + i}
+                    className={`hover:bg-[#eff4ff] transition-colors group ${!field.isVisible ? "opacity-50" : ""}`}
+                  >
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
                         <button
@@ -254,29 +273,78 @@ export default function FormBuilderPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-sm text-[#0b1c30]">{field.label}</div>
-                      <div className="font-mono text-xs text-[#74777d] mt-0.5">{field.key}</div>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="font-semibold text-sm text-[#0b1c30]">{field.label}</div>
+                          <div className="font-mono text-xs text-[#74777d] mt-0.5">{field.key}</div>
+                        </div>
+                        {field.isCore && (
+                          <span className="text-[10px] font-semibold bg-[#dce9ff] text-[#0054cd] px-1.5 py-0.5 rounded uppercase tracking-wide">
+                            Sistema
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="bg-[#dce9ff] text-[#44474c] px-2 py-1 rounded text-xs font-semibold">{FIELD_TYPE_LABELS[field.type]}</span>
+                      <span className="bg-[#dce9ff] text-[#44474c] px-2 py-1 rounded text-xs font-semibold">
+                        {FIELD_TYPE_LABELS[field.type] ?? field.type}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
-                      {field.required ? (
-                        <span className="text-xs font-semibold text-green-700 flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-600 inline-block" />
-                          Obrigatório
-                        </span>
-                      ) : (
-                        <span className="text-xs font-semibold text-[#74777d] flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#74777d] inline-block" />
-                          Opcional
-                        </span>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {field.required ? (
+                          <span className="text-xs font-semibold text-green-700 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-600 inline-block" />
+                            Obrigatório
+                          </span>
+                        ) : (
+                          <span className="text-xs font-semibold text-[#74777d] flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#74777d] inline-block" />
+                            Opcional
+                          </span>
+                        )}
+                        {!field.isVisible && (
+                          <span className="text-xs text-[#74777d] flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">visibility_off</span>
+                            Oculto
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openEdit(i)} className="text-[#0054cd] text-sm font-semibold hover:underline">Editar</button>
-                        <button onClick={() => removeField(i)} className="text-[#ba1a1a] text-sm font-semibold hover:underline">Remover</button>
+                        {!isLocked(field) && (
+                          <>
+                            <button
+                              onClick={() => openEdit(i)}
+                              className="text-[#0054cd] text-sm font-semibold hover:underline"
+                            >
+                              Editar
+                            </button>
+                            {field.isCore ? (
+                              <button
+                                onClick={() => toggleVisibility(i)}
+                                className="text-[#44474c] text-sm font-semibold hover:underline"
+                                title={field.isVisible ? "Ocultar campo" : "Exibir campo"}
+                              >
+                                {field.isVisible ? "Ocultar" : "Exibir"}
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => removeField(i)}
+                                className="text-[#ba1a1a] text-sm font-semibold hover:underline"
+                              >
+                                Remover
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {isLocked(field) && (
+                          <span className="text-xs text-[#74777d] flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">lock</span>
+                            LGPD
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -293,8 +361,13 @@ export default function FormBuilderPage() {
           <div className="bg-white w-full max-w-[600px] rounded-xl shadow-2xl border border-[#c4c6cd] overflow-hidden">
             {/* Modal header */}
             <div className="px-6 py-4 border-b border-[#c4c6cd] flex justify-between items-center bg-[#eff4ff]/30">
-              <h3 className="font-semibold text-[#0b1c30] text-lg">
+              <h3 className="font-semibold text-[#0b1c30] text-lg flex items-center gap-2">
                 {editIndex !== null ? "Editar campo" : "Novo campo"}
+                {draft.isCore && (
+                  <span className="text-[10px] font-semibold bg-[#dce9ff] text-[#0054cd] px-1.5 py-0.5 rounded uppercase tracking-wide">
+                    Sistema
+                  </span>
+                )}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -320,10 +393,11 @@ export default function FormBuilderPage() {
                 <div>
                   <label className="block text-sm font-medium text-[#44474c] mb-1">Chave (key)</label>
                   <input
-                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0054cd] disabled:bg-[#f5f5f5] disabled:text-[#74777d]"
                     value={draft.key}
                     onChange={(e) => handleDraftChange("key", slugify(e.target.value))}
                     placeholder="gerado automaticamente"
+                    disabled={draft.isCore}
                   />
                 </div>
               </div>
@@ -333,9 +407,10 @@ export default function FormBuilderPage() {
                 <div>
                   <label className="block text-sm font-medium text-[#44474c] mb-1">Tipo</label>
                   <select
-                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] disabled:bg-[#f5f5f5] disabled:text-[#74777d]"
                     value={draft.type}
                     onChange={(e) => handleDraftChange("type", e.target.value)}
+                    disabled={draft.isCore}
                   >
                     {Object.entries(FIELD_TYPE_LABELS).map(([v, l]) => (
                       <option key={v} value={v}>{l}</option>
@@ -353,7 +428,7 @@ export default function FormBuilderPage() {
               </div>
 
               {/* Options (SELECT only) */}
-              {draft.type === "SELECT" && (
+              {draft.type === "SELECT" && !draft.isCore && (
                 <div>
                   <label className="block text-sm font-medium text-[#44474c] mb-1">Opções</label>
                   <div className="flex gap-2 mb-2">
@@ -378,11 +453,10 @@ export default function FormBuilderPage() {
               )}
 
               {/* Required checkbox */}
-              <div className="bg-[#eff4ff] rounded-lg p-4">
+              <div className="bg-[#eff4ff] rounded-lg p-4 flex items-center justify-between gap-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    id="required"
                     checked={draft.required}
                     onChange={(e) => handleDraftChange("required", e.target.checked)}
                     className="w-4 h-4 rounded accent-[#0054cd]"
@@ -391,27 +465,29 @@ export default function FormBuilderPage() {
                 </label>
               </div>
 
-              {/* Min/Max */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#44474c] mb-1">Mín. caracteres</label>
-                  <input
-                    type="number"
-                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
-                    value={draft.minLength ?? ""}
-                    onChange={(e) => handleDraftChange("minLength", e.target.value ? Number(e.target.value) : undefined)}
-                  />
+              {/* Min/Max (non-core only) */}
+              {!draft.isCore && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[#44474c] mb-1">Mín. caracteres</label>
+                    <input
+                      type="number"
+                      className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                      value={draft.minLength ?? ""}
+                      onChange={(e) => handleDraftChange("minLength", e.target.value ? Number(e.target.value) : undefined)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#44474c] mb-1">Máx. caracteres</label>
+                    <input
+                      type="number"
+                      className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                      value={draft.maxLength ?? ""}
+                      onChange={(e) => handleDraftChange("maxLength", e.target.value ? Number(e.target.value) : undefined)}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#44474c] mb-1">Máx. caracteres</label>
-                  <input
-                    type="number"
-                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
-                    value={draft.maxLength ?? ""}
-                    onChange={(e) => handleDraftChange("maxLength", e.target.value ? Number(e.target.value) : undefined)}
-                  />
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Modal footer */}
