@@ -52,7 +52,7 @@ export async function saveDraftForm(req: AuthRequest, res: Response) {
           placeholder: f.placeholder,
           required: f.required,
           order: f.order,
-          options: f.options ?? [],
+          options: { set: f.options ?? [] },
           minLength: f.minLength,
           maxLength: f.maxLength,
         })),
