@@ -1,35 +1,41 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
+@theme {
+  --color-primary: #041627;
+  --color-secondary: #0054cd;
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-fixed-variant: #0040a1;
+  --color-surface: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #44474c;
+  --color-outline: #74777d;
+  --color-outline-variant: #c4c6cd;
+  --color-error: #ba1a1a;
+  --color-background: #f8f9ff;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
 
+@layer base {
   * {
     box-sizing: border-box;
-    border-color: hsl(var(--border));
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
   }
 
   body {
-    margin: 0;
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #f8f9ff;
+    color: #0b1c30;
     -webkit-font-smoothing: antialiased;
+    margin: 0;
   }
 }

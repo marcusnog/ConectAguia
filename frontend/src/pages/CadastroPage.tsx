@@ -137,18 +137,16 @@ export default function CadastroPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+      <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#c4c6cd] p-10 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <span className="material-symbols-outlined text-green-600 text-4xl">check_circle</span>
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Cadastro enviado!</h2>
-          <p className="text-gray-500">Seu cadastro foi recebido e será analisado em breve.</p>
+          <h2 className="text-2xl font-bold text-[#0b1c30] mb-3">Cadastro enviado com sucesso!</h2>
+          <p className="text-[#44474c] text-sm">Seu cadastro foi recebido e será analisado em breve. Entraremos em contato pelo e-mail informado.</p>
           <button
             onClick={() => setSuccess(false)}
-            className="mt-6 text-blue-600 hover:underline text-sm"
+            className="mt-6 px-5 py-2 bg-[#0054cd] hover:bg-[#0040a1] text-white text-sm font-semibold rounded-lg transition-colors"
           >
             Fazer outro cadastro
           </button>
@@ -158,30 +156,37 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-[#f8f9ff]">
+      {/* Header bar */}
+      <div className="bg-white border-b border-[#c4c6cd] h-16 flex items-center px-8">
+        <span className="text-[#0054cd] font-bold text-xl">ConectAguia</span>
+      </div>
+
+      <div className="py-10 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">ConectAguia</h1>
-          <p className="text-gray-500 mt-1">Cadastro de Prestador de Serviço</p>
+          <h1 className="text-3xl font-bold text-[#0b1c30]">Cadastro de Prestador</h1>
+          <p className="text-[#44474c] mt-1">Preencha o formulário abaixo para se cadastrar</p>
         </div>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-6"
+          className="bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#c4c6cd] p-8 space-y-6"
         >
           {/* Dados pessoais */}
           <section>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-lg font-semibold text-[#0b1c30] mb-4 pb-2 border-b border-[#c4c6cd] flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#0054cd]">person</span>
               Dados Pessoais
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Nome completo / Razão social *
                 </label>
                 <input
                   {...register("name")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder="João Silva"
                 />
                 {errors.name && (
@@ -190,12 +195,12 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Tipo de documento *
                 </label>
                 <select
                   {...register("documentType")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   onChange={(e) => {
                     setValue("documentType", e.target.value as "CPF" | "CNPJ");
                     setValue("document", "");
@@ -207,13 +212,13 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   {docType === "CPF" ? "CPF *" : "CNPJ *"}
                 </label>
                 <input
                   {...register("document")}
                   onChange={handleDocChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder={docType === "CPF" ? "000.000.000-00" : "00.000.000/0000-00"}
                 />
                 {errors.document && (
@@ -222,13 +227,13 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   E-mail *
                 </label>
                 <input
                   {...register("email")}
                   type="email"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder="seu@email.com"
                 />
                 {errors.email && (
@@ -237,13 +242,13 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Telefone *
                 </label>
                 <input
                   {...register("phone")}
                   onChange={handlePhoneChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder="(00) 00000-0000"
                 />
                 {errors.phone && (
@@ -255,49 +260,50 @@ export default function CadastroPage() {
 
           {/* Endereço */}
           <section>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-lg font-semibold text-[#0b1c30] mb-4 pb-2 border-b border-[#c4c6cd] flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#0054cd]">location_on</span>
               Endereço (opcional)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Endereço
                 </label>
                 <input
                   {...register("address")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder="Rua, número, bairro"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Cidade
                 </label>
                 <input
                   {...register("city")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">
                     UF
                   </label>
                   <input
                     {...register("state")}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd] uppercase"
                     placeholder="SP"
                     maxLength={2}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">
                     CEP
                   </label>
                   <input
                     {...register("zipCode")}
                     onChange={handleCEPChange}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                     placeholder="00000-000"
                   />
                 </div>
@@ -307,17 +313,18 @@ export default function CadastroPage() {
 
           {/* Serviço */}
           <section>
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+            <h2 className="text-lg font-semibold text-[#0b1c30] mb-4 pb-2 border-b border-[#c4c6cd] flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#0054cd]">construction</span>
               Serviço Prestado
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Tipo de serviço *
                 </label>
                 <input
                   {...register("serviceType")}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                   placeholder="Ex: Encanador, Eletricista, Designer Gráfico..."
                 />
                 {errors.serviceType && (
@@ -327,13 +334,13 @@ export default function CadastroPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-[#44474c] mb-1">
                   Descrição do serviço
                 </label>
                 <textarea
                   {...register("serviceDescription")}
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd] resize-none"
                   placeholder="Descreva brevemente os serviços que você oferece..."
                 />
               </div>
@@ -343,13 +350,13 @@ export default function CadastroPage() {
           {/* Campos extras configurados pelo gestor */}
           {extraFields.length > 0 && (
             <section>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+              <h2 className="text-lg font-semibold text-[#041627] mb-4 pb-2 border-b border-[#c4c6cd]">
                 Informações Complementares
               </h2>
               <div className="space-y-4">
                 {extraFields.map((field) => (
                   <div key={field.key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-[#44474c] mb-1">
                       {field.label} {field.required && "*"}
                     </label>
                     {field.type === "TEXTAREA" ? (
@@ -358,13 +365,13 @@ export default function CadastroPage() {
                         placeholder={field.placeholder}
                         value={String(extraValues[field.key] ?? "")}
                         onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd] resize-none"
                       />
                     ) : field.type === "SELECT" ? (
                       <select
                         value={String(extraValues[field.key] ?? "")}
                         onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                       >
                         <option value="">Selecione...</option>
                         {field.options.map((opt) => (
@@ -377,9 +384,9 @@ export default function CadastroPage() {
                           type="checkbox"
                           checked={Boolean(extraValues[field.key])}
                           onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.checked }))}
-                          className="w-4 h-4 accent-blue-600"
+                          className="w-4 h-4 accent-[#0054cd]"
                         />
-                        <span className="text-sm text-gray-700">{field.placeholder || field.label}</span>
+                        <span className="text-sm text-[#44474c]">{field.placeholder || field.label}</span>
                       </label>
                     ) : (
                       <input
@@ -387,7 +394,7 @@ export default function CadastroPage() {
                         placeholder={field.placeholder}
                         value={String(extraValues[field.key] ?? "")}
                         onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd] focus:border-[#0054cd]"
                       />
                     )}
                     {extraErrors[field.key] && (
@@ -400,11 +407,12 @@ export default function CadastroPage() {
           )}
 
           {/* LGPD */}
-          <section className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-            <h2 className="text-sm font-semibold text-blue-800 mb-2">
+          <section className="bg-[#eff4ff] rounded-xl p-4 border border-[#c4c6cd]">
+            <h2 className="text-sm font-semibold text-[#0b1c30] mb-2 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#0054cd]">gavel</span>
               Termos e Privacidade (LGPD)
             </h2>
-            <p className="text-xs text-blue-700 mb-3">
+            <p className="text-xs text-[#44474c] mb-3">
               Seus dados serão tratados conforme a Lei Geral de Proteção de Dados
               (Lei 13.709/2018).
             </p>
@@ -412,15 +420,15 @@ export default function CadastroPage() {
               <input
                 {...register("termsAccepted")}
                 type="checkbox"
-                className="mt-0.5 w-4 h-4 accent-blue-600"
+                className="mt-0.5 w-4 h-4 accent-[#0054cd]"
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-[#44474c]">
                 Li e aceito os{" "}
                 <a
                   href="/termos"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline font-medium"
+                  className="text-[#0054cd] hover:underline font-medium"
                 >
                   Termos de Uso e Política de Privacidade
                 </a>
@@ -444,11 +452,17 @@ export default function CadastroPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 rounded-lg transition-colors text-sm"
+            className="w-full bg-[#0054cd] hover:bg-[#0040a1] disabled:opacity-60 text-white font-semibold py-3 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
           >
-            {isSubmitting ? "Enviando..." : "Enviar Cadastro"}
+            {isSubmitting ? "Enviando..." : (
+              <>
+                <span className="material-symbols-outlined text-xl">send</span>
+                Enviar Cadastro
+              </>
+            )}
           </button>
         </form>
+      </div>
       </div>
     </div>
   );

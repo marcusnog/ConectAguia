@@ -156,31 +156,44 @@ export default function FormBuilderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate("/dashboard")} className="text-gray-500 hover:text-gray-700 text-sm">
+    <div className="min-h-screen bg-[#f8f9ff]">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-[#c4c6cd] h-16 px-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-1 text-[#44474c] hover:text-[#0054cd] text-sm transition-colors"
+          >
             ← Dashboard
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">Construtor de Formulário</h1>
+          <div className="h-6 w-px bg-[#c4c6cd]" />
+          <span className="font-bold text-lg text-[#0b1c30]">Construtor de Formulário</span>
+          {schema && (
+            schema.published ? (
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+                Publicado v{schema.version}
+              </span>
+            ) : (
+              <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" />
+                Rascunho v{schema.version}
+              </span>
+            )
+          )}
         </div>
         <div className="flex items-center gap-3">
-          {schema && (
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${schema.published ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-              {schema.published ? `Publicado v${schema.version}` : `Rascunho v${schema.version}`}
-            </span>
-          )}
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50"
+            className="px-4 py-2 border border-[#c4c6cd] text-[#44474c] text-sm rounded-lg hover:bg-[#eff4ff] disabled:opacity-50 transition-colors"
           >
             {saving ? "Salvando..." : saved ? "Salvo!" : "Salvar rascunho"}
           </button>
           <button
             onClick={handlePublish}
             disabled={publishing || !schema?.id}
-            className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+            className="px-5 py-2 bg-[#0054cd] text-white text-sm font-semibold rounded-lg hover:bg-[#0040a1] disabled:opacity-50 transition-colors"
           >
             {publishing ? "Publicando..." : "Publicar"}
           </button>
@@ -188,176 +201,231 @@ export default function FormBuilderPage() {
       </header>
 
       <div className="max-w-3xl mx-auto py-8 px-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-white rounded-xl border border-[#c4c6cd] shadow-[0_4px_12px_rgba(4,22,39,0.05)] overflow-hidden">
+          {/* Card header */}
+          <div className="p-6 border-b border-[#c4c6cd] flex justify-between items-center bg-[#eff4ff]/30">
             <div>
-              <h2 className="font-semibold text-gray-900">Campos extras do formulário</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="font-semibold text-lg text-[#0b1c30]">Campos extras do formulário</h2>
+              <p className="text-sm text-[#44474c] mt-1">
                 Campos fixos (nome, documento, e-mail, telefone, tipo de serviço, endereço, LGPD) são sempre exibidos.
                 Adicione campos personalizados abaixo.
               </p>
             </div>
             <button
               onClick={openAdd}
-              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+              className="flex items-center gap-2 px-4 py-2 bg-[#0054cd] text-white text-sm font-semibold rounded-lg hover:bg-[#0040a1] transition-colors whitespace-nowrap"
             >
-              + Adicionar campo
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Adicionar campo
             </button>
           </div>
 
+          {/* Field list */}
           {fields.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <p className="text-sm">Nenhum campo extra adicionado ainda.</p>
+            <div className="py-16 text-center text-sm text-[#74777d]">
+              Nenhum campo extra adicionado ainda.
             </div>
           ) : (
-            <ul className="space-y-3">
-              {fields.map((field, i) => (
-                <li key={field.key + i} className="flex items-center gap-3 p-4 rounded-lg border border-gray-100 bg-gray-50">
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={() => moveField(i, -1)}
-                      disabled={i === 0}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-xs leading-none"
-                    >▲</button>
-                    <button
-                      onClick={() => moveField(i, 1)}
-                      disabled={i === fields.length - 1}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-xs leading-none"
-                    >▼</button>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-gray-900">{field.label}</span>
-                      {field.required && (
-                        <span className="text-xs text-red-500">*obrigatório</span>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#eff4ff]">
+                  <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider w-16">Ordem</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider">Rótulo / Chave</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider">Tipo</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#c4c6cd]">
+                {fields.map((field, i) => (
+                  <tr key={field.key + i} className="hover:bg-[#eff4ff] transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => moveField(i, -1)}
+                          disabled={i === 0}
+                          className="material-symbols-outlined text-[#74777d] hover:text-[#0054cd] text-xl disabled:opacity-20"
+                        >keyboard_arrow_up</button>
+                        <button
+                          onClick={() => moveField(i, 1)}
+                          disabled={i === fields.length - 1}
+                          className="material-symbols-outlined text-[#74777d] hover:text-[#0054cd] text-xl disabled:opacity-20"
+                        >keyboard_arrow_down</button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-semibold text-sm text-[#0b1c30]">{field.label}</div>
+                      <div className="font-mono text-xs text-[#74777d] mt-0.5">{field.key}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-[#dce9ff] text-[#44474c] px-2 py-1 rounded text-xs font-semibold">{FIELD_TYPE_LABELS[field.type]}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {field.required ? (
+                        <span className="text-xs font-semibold text-green-700 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-600 inline-block" />
+                          Obrigatório
+                        </span>
+                      ) : (
+                        <span className="text-xs font-semibold text-[#74777d] flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#74777d] inline-block" />
+                          Opcional
+                        </span>
                       )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                        {FIELD_TYPE_LABELS[field.type]}
-                      </span>
-                      <span className="text-xs text-gray-400">key: {field.key}</span>
-                    </div>
-                  </div>
-                  <button onClick={() => openEdit(i)} className="text-xs text-blue-600 hover:underline">Editar</button>
-                  <button onClick={() => removeField(i)} className="text-xs text-red-500 hover:underline">Remover</button>
-                </li>
-              ))}
-            </ul>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEdit(i)} className="text-[#0054cd] text-sm font-semibold hover:underline">Editar</button>
+                        <button onClick={() => removeField(i)} className="text-[#ba1a1a] text-sm font-semibold hover:underline">Remover</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
 
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">
-              {editIndex !== null ? "Editar campo" : "Novo campo"}
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
-                <input
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  value={draft.label}
-                  onChange={(e) => handleDraftChange("label", e.target.value)}
-                  placeholder="Ex: Nome da empresa"
-                />
+        <div className="fixed inset-0 bg-[#1a2b3c]/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-[600px] rounded-xl shadow-2xl border border-[#c4c6cd] overflow-hidden">
+            {/* Modal header */}
+            <div className="px-6 py-4 border-b border-[#c4c6cd] flex justify-between items-center bg-[#eff4ff]/30">
+              <h3 className="font-semibold text-[#0b1c30] text-lg">
+                {editIndex !== null ? "Editar campo" : "Novo campo"}
+              </h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-1 text-[#74777d] hover:text-[#0b1c30] transition-colors"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="p-6 space-y-5">
+              {/* Label + Key row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Rótulo (label)</label>
+                  <input
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    value={draft.label}
+                    onChange={(e) => handleDraftChange("label", e.target.value)}
+                    placeholder="Ex: Nome da empresa"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Chave (key)</label>
+                  <input
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    value={draft.key}
+                    onChange={(e) => handleDraftChange("key", slugify(e.target.value))}
+                    placeholder="gerado automaticamente"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Chave (key)</label>
-                <input
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
-                  value={draft.key}
-                  onChange={(e) => handleDraftChange("key", slugify(e.target.value))}
-                  placeholder="gerado automaticamente"
-                />
+
+              {/* Type + Placeholder row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Tipo</label>
+                  <select
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    value={draft.type}
+                    onChange={(e) => handleDraftChange("type", e.target.value)}
+                  >
+                    {Object.entries(FIELD_TYPE_LABELS).map(([v, l]) => (
+                      <option key={v} value={v}>{l}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Placeholder</label>
+                  <input
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
+                    value={draft.placeholder}
+                    onChange={(e) => handleDraftChange("placeholder", e.target.value)}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  value={draft.type}
-                  onChange={(e) => handleDraftChange("type", e.target.value)}
-                >
-                  {Object.entries(FIELD_TYPE_LABELS).map(([v, l]) => (
-                    <option key={v} value={v}>{l}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Placeholder</label>
-                <input
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                  value={draft.placeholder}
-                  onChange={(e) => handleDraftChange("placeholder", e.target.value)}
-                />
-              </div>
+
+              {/* Options (SELECT only) */}
               {draft.type === "SELECT" && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Opções</label>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Opções</label>
                   <div className="flex gap-2 mb-2">
                     <input
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                      className="flex-1 border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
                       value={optionInput}
                       onChange={(e) => setOptionInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addOption())}
                       placeholder="Digita e pressiona Enter"
                     />
-                    <button onClick={addOption} className="px-3 py-2 bg-gray-100 rounded-lg text-sm">Add</button>
+                    <button onClick={addOption} className="px-3 py-2 bg-[#eff4ff] border border-[#c4c6cd] rounded-lg text-sm text-[#44474c] hover:bg-[#e5eeff]">Add</button>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {draft.options.map((opt, i) => (
-                      <span key={i} className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                      <span key={i} className="flex items-center gap-1 text-xs bg-[#e5eeff] text-[#0054cd] px-2 py-1 rounded">
                         {opt}
-                        <button onClick={() => removeOption(i)} className="ml-1 text-blue-400 hover:text-red-500">×</button>
+                        <button onClick={() => removeOption(i)} className="ml-1 text-[#0054cd] hover:text-[#ba1a1a]">×</button>
                       </span>
                     ))}
                   </div>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="required"
-                  checked={draft.required}
-                  onChange={(e) => handleDraftChange("required", e.target.checked)}
-                  className="rounded"
-                />
-                <label htmlFor="required" className="text-sm text-gray-700">Campo obrigatório</label>
+
+              {/* Required checkbox */}
+              <div className="bg-[#eff4ff] rounded-lg p-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="required"
+                    checked={draft.required}
+                    onChange={(e) => handleDraftChange("required", e.target.checked)}
+                    className="w-4 h-4 rounded accent-[#0054cd]"
+                  />
+                  <span className="text-sm font-medium text-[#44474c]">Campo obrigatório</span>
+                </label>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+
+              {/* Min/Max */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mín. caracteres</label>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Mín. caracteres</label>
                   <input
                     type="number"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
                     value={draft.minLength ?? ""}
                     onChange={(e) => handleDraftChange("minLength", e.target.value ? Number(e.target.value) : undefined)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Máx. caracteres</label>
+                  <label className="block text-sm font-medium text-[#44474c] mb-1">Máx. caracteres</label>
                   <input
                     type="number"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                    className="w-full border border-[#c4c6cd] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0054cd]"
                     value={draft.maxLength ?? ""}
                     onChange={(e) => handleDraftChange("maxLength", e.target.value ? Number(e.target.value) : undefined)}
                   />
                 </div>
               </div>
             </div>
-            <div className="flex gap-3 mt-6">
+
+            {/* Modal footer */}
+            <div className="px-6 py-4 border-t border-[#c4c6cd] flex justify-end gap-3 bg-[#eff4ff]/20">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 py-2 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-[#c4c6cd] text-[#44474c] text-sm rounded-lg hover:bg-[#eff4ff] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={saveField}
                 disabled={!draft.label || !draft.key}
-                className="flex-1 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="px-5 py-2 bg-[#0054cd] text-white text-sm font-semibold rounded-lg hover:bg-[#0040a1] disabled:opacity-50 transition-colors"
               >
                 {editIndex !== null ? "Atualizar" : "Adicionar"}
               </button>

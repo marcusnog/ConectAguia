@@ -105,24 +105,24 @@ export default function DashboardPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f8f9ff]">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-50 bg-white border-b border-[#c4c6cd] px-8 h-16 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">ConectAguia</h1>
-          <p className="text-xs text-gray-500">Dashboard — Gestão de Cadastros</p>
+          <span className="text-[#0054cd] font-bold text-xl">ConectAguia</span>
+          <p className="text-xs text-[#44474c]">Dashboard - Gestão de Cadastros</p>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{manager?.name}</span>
+          <span className="text-sm font-semibold">{manager?.name}</span>
           <button
             onClick={() => navigate("/dashboard/form-builder")}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-[#0054cd] text-sm hover:underline"
           >
             Formulário
           </button>
           <button
             onClick={handleLogout}
-            className="text-sm text-red-600 hover:underline"
+            className="text-[#ba1a1a] text-sm hover:underline"
           >
             Sair
           </button>
@@ -131,45 +131,75 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {(["PENDING", "APPROVED", "REJECTED", "ARCHIVED"] as ProviderStatus[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => {
-                setStatusFilter(statusFilter === s ? "" : s);
-                setPage(1);
-              }}
-              className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-sm ${
-                statusFilter === s ? "ring-2 ring-blue-500" : "border-gray-200"
-              }`}
-            >
-              <div className={`inline-flex px-2 py-0.5 rounded text-xs font-medium mb-2 ${STATUS_COLORS[s]}`}>
-                {STATUS_LABELS[s]}
-              </div>
-              <div className="text-2xl font-bold text-gray-900">{counts[s]}</div>
-            </button>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          {/* Pendente */}
+          <button
+            onClick={() => { setStatusFilter(statusFilter === "PENDING" ? "" : "PENDING"); setPage(1); }}
+            className={`bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] p-6 text-left cursor-pointer hover:shadow-[0_8px_20px_rgba(4,22,39,0.08)] transition-all border-l-4 border-l-yellow-500 ${statusFilter === "PENDING" ? "ring-2 ring-[#0054cd]" : ""}`}
+          >
+            <span className="text-sm font-medium text-[#44474c] block mb-2">Pendente</span>
+            <div className="flex items-end justify-between">
+              <span className="text-4xl font-bold text-[#0b1c30]">{counts.PENDING}</span>
+              <span className="material-symbols-outlined text-yellow-500 text-3xl">pending_actions</span>
+            </div>
+          </button>
+          {/* Aprovado */}
+          <button
+            onClick={() => { setStatusFilter(statusFilter === "APPROVED" ? "" : "APPROVED"); setPage(1); }}
+            className={`bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] p-6 text-left cursor-pointer hover:shadow-[0_8px_20px_rgba(4,22,39,0.08)] transition-all border-l-4 border-l-green-600 ${statusFilter === "APPROVED" ? "ring-2 ring-[#0054cd]" : ""}`}
+          >
+            <span className="text-sm font-medium text-[#44474c] block mb-2">Aprovado</span>
+            <div className="flex items-end justify-between">
+              <span className="text-4xl font-bold text-[#0b1c30]">{counts.APPROVED}</span>
+              <span className="material-symbols-outlined text-green-600 text-3xl">check_circle</span>
+            </div>
+          </button>
+          {/* Recusado */}
+          <button
+            onClick={() => { setStatusFilter(statusFilter === "REJECTED" ? "" : "REJECTED"); setPage(1); }}
+            className={`bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] p-6 text-left cursor-pointer hover:shadow-[0_8px_20px_rgba(4,22,39,0.08)] transition-all border-l-4 border-l-[#ba1a1a] ${statusFilter === "REJECTED" ? "ring-2 ring-[#0054cd]" : ""}`}
+          >
+            <span className="text-sm font-medium text-[#44474c] block mb-2">Recusado</span>
+            <div className="flex items-end justify-between">
+              <span className="text-4xl font-bold text-[#0b1c30]">{counts.REJECTED}</span>
+              <span className="material-symbols-outlined text-[#ba1a1a] text-3xl">cancel</span>
+            </div>
+          </button>
+          {/* Arquivado */}
+          <button
+            onClick={() => { setStatusFilter(statusFilter === "ARCHIVED" ? "" : "ARCHIVED"); setPage(1); }}
+            className={`bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] p-6 text-left cursor-pointer hover:shadow-[0_8px_20px_rgba(4,22,39,0.08)] transition-all border-l-4 border-l-[#74777d] ${statusFilter === "ARCHIVED" ? "ring-2 ring-[#0054cd]" : ""}`}
+          >
+            <span className="text-sm font-medium text-[#44474c] block mb-2">Arquivado</span>
+            <div className="flex items-end justify-between">
+              <span className="text-4xl font-bold text-[#0b1c30]">{counts.ARCHIVED}</span>
+              <span className="material-symbols-outlined text-[#74777d] text-3xl">archive</span>
+            </div>
+          </button>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Buscar por nome, e-mail, documento ou serviço..."
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] p-5 flex flex-col md:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#74777d]">search</span>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              placeholder="Buscar por nome, e-mail, documento ou serviço..."
+              className="pl-10 h-12 border border-[#c4c6cd] rounded-lg w-full focus:ring-2 focus:ring-[#0054cd] outline-none text-sm"
+            />
+          </div>
           <select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value as ProviderStatus | "");
               setPage(1);
             }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-12 border border-[#c4c6cd] rounded-lg px-3 focus:ring-2 focus:ring-[#0054cd] outline-none w-full md:w-56 text-sm"
           >
             <option value="">Todos os status</option>
             {(Object.keys(STATUS_LABELS) as ProviderStatus[]).map((s) => (
@@ -181,67 +211,69 @@ export default function DashboardPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-[0_4px_12px_rgba(4,22,39,0.05)] border border-[#e2e8f0] overflow-hidden">
           {loading ? (
-            <div className="py-16 text-center text-gray-400 text-sm">Carregando...</div>
+            <div className="py-16 text-center text-[#74777d] text-sm">Carregando...</div>
           ) : providers.length === 0 ? (
-            <div className="py-16 text-center text-gray-400 text-sm">
+            <div className="py-16 text-center text-[#74777d] text-sm">
               Nenhum cadastro encontrado
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-[#eff4ff] border-b border-[#c4c6cd]">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Nome</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Documento</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Serviço</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Cadastro</th>
-                    <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wide">Ações</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Nome</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Documento</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Serviço</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Status</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Cadastro</th>
+                    <th className="px-6 py-4 text-xs font-semibold text-[#44474c] uppercase tracking-wider text-left">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#c4c6cd]">
                   {providers.map((p) => (
                     <tr
                       key={p.id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="hover:bg-[#eff4ff] transition-colors cursor-pointer"
                       onClick={() => setSelectedId(p.id)}
                     >
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-gray-900">{p.name}</div>
-                        <div className="text-gray-500 text-xs">{p.email}</div>
+                      <td className="px-6 py-4">
+                        <div className="font-semibold text-[#0b1c30]">{p.name}</div>
+                        <div className="text-xs text-[#44474c]">{p.email}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="text-gray-600 font-mono text-xs">{p.document}</div>
-                        <div className="text-gray-400 text-xs">{p.documentType}</div>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-mono">{p.document}</div>
+                        <div className="text-xs text-[#74777d]">{p.documentType}</div>
                       </td>
-                      <td className="px-4 py-3 text-gray-700">{p.serviceType}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[p.status]}`}>
+                      <td className="px-6 py-4 text-[#44474c]">{p.serviceType}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${STATUS_COLORS[p.status]}`}>
                           {STATUS_LABELS[p.status]}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs">
+                      <td className="px-6 py-4 text-[#44474c] text-xs">
                         {new Date(p.createdAt).toLocaleDateString("pt-BR")}
                       </td>
-                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex gap-2">
+                      <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex gap-1">
                           {p.status === "PENDING" && (
                             <>
                               <button
                                 onClick={() => updateStatus(p.id, "APPROVED")}
                                 disabled={updating === p.id}
-                                className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-40"
+                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-40"
+                                title="Aprovar"
                               >
-                                Aprovar
+                                <span className="material-symbols-outlined text-xl">check_circle</span>
                               </button>
                               <button
                                 onClick={() => updateStatus(p.id, "REJECTED")}
                                 disabled={updating === p.id}
-                                className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors disabled:opacity-40"
+                                className="p-2 text-[#ba1a1a] hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40"
+                                title="Recusar"
                               >
-                                Recusar
+                                <span className="material-symbols-outlined text-xl">cancel</span>
                               </button>
                             </>
                           )}
@@ -249,9 +281,10 @@ export default function DashboardPage() {
                             <button
                               onClick={() => updateStatus(p.id, "ARCHIVED")}
                               disabled={updating === p.id}
-                              className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition-colors disabled:opacity-40"
+                              className="p-2 text-[#74777d] hover:bg-[#eff4ff] rounded-lg transition-colors disabled:opacity-40"
+                              title="Arquivar"
                             >
-                              Arquivar
+                              <span className="material-symbols-outlined text-xl">archive</span>
                             </button>
                           )}
                         </div>
@@ -265,23 +298,23 @@ export default function DashboardPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between text-sm">
-              <span className="text-gray-500">{total} cadastros</span>
-              <div className="flex gap-2">
+            <div className="px-6 py-4 bg-[#eff4ff] border-t border-[#c4c6cd] flex items-center justify-between">
+              <span className="text-sm text-[#44474c]">{total} cadastros</span>
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50"
+                  className="px-4 py-2 border border-[#c4c6cd] rounded-lg text-sm disabled:opacity-40 hover:bg-[#e5eeff]"
                 >
                   Anterior
                 </button>
-                <span className="px-3 py-1 text-gray-600">
+                <span className="px-4 py-2 text-sm text-[#44474c]">
                   {page} / {totalPages}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50"
+                  className="px-4 py-2 border border-[#c4c6cd] rounded-lg text-sm disabled:opacity-40 hover:bg-[#e5eeff]"
                 >
                   Próxima
                 </button>
