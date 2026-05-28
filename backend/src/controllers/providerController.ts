@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { DocumentType, ProviderStatus } from "@prisma/client";
 
@@ -78,7 +79,7 @@ export async function createProvider(req: Request, res: Response): Promise<void>
       zipCode: (providerData["zipCode"] as string) ?? null,
       serviceType: (providerData["serviceType"] as string) ?? null,
       serviceDescription: (providerData["serviceDescription"] as string) ?? null,
-      extraFields: Object.keys(extraFields).length > 0 ? extraFields : undefined,
+      extraFields: Object.keys(extraFields).length > 0 ? (extraFields as Prisma.InputJsonValue) : undefined,
       termsAccepted: true,
       termsVersion,
       consentLogs: {

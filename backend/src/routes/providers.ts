@@ -2,7 +2,6 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import {
   createProvider,
-  createProviderValidation,
   listProviders,
   getProvider,
   updateProviderStatus,
@@ -20,7 +19,7 @@ const registrationLimiter = rateLimit({
 });
 
 // Público — cadastro do prestador (com rate limit + validação)
-router.post("/", registrationLimiter, createProviderValidation, createProvider);
+router.post("/", registrationLimiter, createProvider);
 
 // Privado — gestor autenticado
 router.get("/", authMiddleware, listProviders);
