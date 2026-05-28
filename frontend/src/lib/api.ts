@@ -9,23 +9,18 @@ function buildBaseURL() {
 
 const baseURL = buildBaseURL();
 
-export const api = axios.create({ baseURL });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+export const api = axios.create({
+  baseURL,
+  withCredentials: true, // envia httpOnly cookie em todas as requisições
 });
 
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("token");
       localStorage.removeItem("manager");
       window.location.href = `${import.meta.env.BASE_URL}login`;
     }
     return Promise.reject(err);
   }
 );
-

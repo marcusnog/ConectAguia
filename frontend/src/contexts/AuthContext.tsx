@@ -11,7 +11,7 @@ interface Manager {
 interface AuthContextType {
   manager: Manager | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -22,9 +22,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const saved = localStorage.getItem("manager");
-    if (token && saved) {
+    if (saved) {
       setManager(JSON.parse(saved));
     }
     setIsLoading(false);
@@ -32,15 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function login(email: string, password: string) {
     const { data } = await api.post("/auth/login", { email, password });
-    localStorage.setItem("token", data.token);
+    // token salvo como httpOnly cookie pelo backend — não acessível aqui
     localStorage.setItem("manager", JSON.stringify(data.manager));
     setManager(data.manager);
   }
 
-  function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("manager");
-    setManager(null);
+  async function logout() {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      localStorage.removeItem("manager");
+      setManager(null);
+    }
   }
 
   return (

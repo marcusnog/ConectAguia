@@ -7,20 +7,26 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const hash = await bcrypt.hash("admin123", 12);
+  const email = process.env.SEED_MANAGER_EMAIL;
+  const password = process.env.SEED_MANAGER_PASSWORD;
+  const name = process.env.SEED_MANAGER_NAME;
+
+  if (!email || !password || !name) {
+    console.error(
+      "Erro: SEED_MANAGER_EMAIL, SEED_MANAGER_PASSWORD e SEED_MANAGER_NAME são obrigatórios no .env"
+    );
+    process.exit(1);
+  }
+
+  const hash = await bcrypt.hash(password, 12);
 
   const manager = await prisma.manager.upsert({
-    where: { email: "gestor@conectaguia.com.br" },
+    where: { email },
     update: {},
-    create: {
-      email: "gestor@conectaguia.com.br",
-      passwordHash: hash,
-      name: "Gestor Principal",
-    },
+    create: { email, passwordHash: hash, name },
   });
 
   console.log("Gestor criado:", manager.email);
-  console.log("Senha: admin123");
 }
 
 main()

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import providerRoutes from "./routes/providers";
 import formConfigRoutes from "./routes/formConfig";
@@ -29,6 +30,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));

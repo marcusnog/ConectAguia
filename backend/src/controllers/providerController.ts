@@ -1,21 +1,42 @@
 import { Request, Response } from "express";
+import { body, validationResult } from "express-validator";
 import { prisma } from "../lib/prisma";
 import { DocumentType, ProviderStatus } from "@prisma/client";
 
+export const createProviderValidation = [
+  body("name").trim().notEmpty().withMessage("Nome obrigatório"),
+  body("documentType")
+    .isIn(["CPF", "CNPJ"])
+    .withMessage("documentType deve ser CPF ou CNPJ"),
+  body("document").trim().notEmpty().withMessage("Documento obrigatório"),
+  body("email").isEmail().normalizeEmail().withMessage("Email inválido"),
+  body("phone").trim().notEmpty().withMessage("Telefone obrigatório"),
+  body("address").trim().notEmpty().withMessage("Endereço obrigatório"),
+  body("city").trim().notEmpty().withMessage("Cidade obrigatória"),
+  body("state").trim().notEmpty().withMessage("Estado obrigatório"),
+  body("zipCode").trim().notEmpty().withMessage("CEP obrigatório"),
+  body("serviceType").trim().notEmpty().withMessage("Tipo de serviço obrigatório"),
+  body("termsAccepted")
+    .isBoolean()
+    .equals("true")
+    .withMessage("Aceite dos termos obrigatório (LGPD)"),
+];
+
 export async function createProvider(req: Request, res: Response): Promise<void> {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+
   const {
     name, documentType, document, email, phone,
     address, city, state, zipCode,
     serviceType, serviceDescription,
-    termsAccepted,
+    termsAccepted, extraFields,
   } = req.body;
 
-  if (!termsAccepted) {
-    res.status(400).json({ error: "Aceite dos termos obrigatório (LGPD)" });
-    return;
-  }
-
-  const termsVersion = process.env.TERMS_VERSION || "v1.0-teste";
+  const termsVersion = process.env.TERMS_VERSION || "v1.0";
 
   const existing = await prisma.provider.findFirst({
     where: { OR: [{ document }, { email }] },
@@ -31,6 +52,7 @@ export async function createProvider(req: Request, res: Response): Promise<void>
       name, documentType: documentType as DocumentType, document,
       email, phone, address, city, state, zipCode,
       serviceType, serviceDescription,
+      extraFields: extraFields ?? {},
       termsAccepted, termsVersion,
       consentLogs: {
         create: {
@@ -50,8 +72,8 @@ export async function createProvider(req: Request, res: Response): Promise<void>
 export async function listProviders(req: Request, res: Response): Promise<void> {
   const { status, search, page = "1", limit = "20" } = req.query;
 
-  const pageNum = parseInt(page as string);
-  const limitNum = parseInt(limit as string);
+  const pageNum = Math.max(1, parseInt(page as string) || 1);
+  const limitNum = Math.min(100, Math.max(1, parseInt(limit as string) || 20));
   const skip = (pageNum - 1) * limitNum;
 
   const where: Record<string, unknown> = {};
