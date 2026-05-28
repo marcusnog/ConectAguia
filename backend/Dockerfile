@@ -1,4 +1,5 @@
 FROM node:24-alpine AS builder
+ARG CACHEBUST=2
 WORKDIR /app
 
 COPY package*.json ./
