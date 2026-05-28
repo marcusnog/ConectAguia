@@ -65,7 +65,7 @@ export async function saveDraftForm(req: AuthRequest, res: Response) {
 }
 
 export async function publishForm(req: AuthRequest, res: Response) {
-  const { id } = req.params;
+  const id = req.params["id"] as string;
 
   await prisma.formSchema.updateMany({
     where: { published: true },
