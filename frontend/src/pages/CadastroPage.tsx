@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +11,19 @@ import {
   maskPhone,
   maskCEP,
 } from "@/lib/validators";
+
+type FieldType = "TEXT" | "EMAIL" | "PHONE" | "NUMBER" | "TEXTAREA" | "SELECT" | "CHECKBOX";
+
+interface ExtraField {
+  key: string;
+  label: string;
+  type: FieldType;
+  placeholder: string;
+  required: boolean;
+  options: string[];
+  minLength?: number;
+  maxLength?: number;
+}
 
 const schema = z
   .object({
@@ -44,6 +57,15 @@ type FormData = z.infer<typeof schema>;
 export default function CadastroPage() {
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [extraFields, setExtraFields] = useState<ExtraField[]>([]);
+  const [extraValues, setExtraValues] = useState<Record<string, string | boolean>>({});
+  const [extraErrors, setExtraErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    api.get<{ fields: ExtraField[] }>("/form-config").then((r) => {
+      setExtraFields(r.data.fields ?? []);
+    }).catch(() => {});
+  }, []);
 
   const {
     register,
@@ -73,7 +95,26 @@ export default function CadastroPage() {
     setValue("zipCode", maskCEP(e.target.value), { shouldValidate: false });
   }
 
+  function validateExtraFields() {
+    const errs: Record<string, string> = {};
+    for (const f of extraFields) {
+      const val = extraValues[f.key];
+      if (f.required && (val === undefined || val === "" || val === false)) {
+        errs[f.key] = `${f.label} é obrigatório`;
+      }
+      if (typeof val === "string" && f.minLength && val.length < f.minLength) {
+        errs[f.key] = `Mínimo ${f.minLength} caracteres`;
+      }
+      if (typeof val === "string" && f.maxLength && val.length > f.maxLength) {
+        errs[f.key] = `Máximo ${f.maxLength} caracteres`;
+      }
+    }
+    setExtraErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
   async function onSubmit(data: FormData) {
+    if (!validateExtraFields()) return;
     setServerError("");
     try {
       await api.post("/providers", {
@@ -81,9 +122,11 @@ export default function CadastroPage() {
         document: data.document.replace(/\D/g, ""),
         phone: data.phone.replace(/\D/g, ""),
         zipCode: data.zipCode?.replace(/\D/g, ""),
+        extraFields: extraValues,
       });
       setSuccess(true);
       reset();
+      setExtraValues({});
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data
@@ -296,6 +339,65 @@ export default function CadastroPage() {
               </div>
             </div>
           </section>
+
+          {/* Campos extras configurados pelo gestor */}
+          {extraFields.length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+                Informações Complementares
+              </h2>
+              <div className="space-y-4">
+                {extraFields.map((field) => (
+                  <div key={field.key}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {field.label} {field.required && "*"}
+                    </label>
+                    {field.type === "TEXTAREA" ? (
+                      <textarea
+                        rows={3}
+                        placeholder={field.placeholder}
+                        value={String(extraValues[field.key] ?? "")}
+                        onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                      />
+                    ) : field.type === "SELECT" ? (
+                      <select
+                        value={String(extraValues[field.key] ?? "")}
+                        onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Selecione...</option>
+                        {field.options.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    ) : field.type === "CHECKBOX" ? (
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(extraValues[field.key])}
+                          onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.checked }))}
+                          className="w-4 h-4 accent-blue-600"
+                        />
+                        <span className="text-sm text-gray-700">{field.placeholder || field.label}</span>
+                      </label>
+                    ) : (
+                      <input
+                        type={field.type === "NUMBER" ? "number" : field.type === "EMAIL" ? "email" : "text"}
+                        placeholder={field.placeholder}
+                        value={String(extraValues[field.key] ?? "")}
+                        onChange={(e) => setExtraValues((p) => ({ ...p, [field.key]: e.target.value }))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                    {extraErrors[field.key] && (
+                      <p className="text-red-500 text-xs mt-1">{extraErrors[field.key]}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* LGPD */}
           <section className="bg-blue-50 rounded-xl p-4 border border-blue-100">

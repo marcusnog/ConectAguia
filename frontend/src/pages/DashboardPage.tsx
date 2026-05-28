@@ -115,6 +115,12 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600">{manager?.name}</span>
           <button
+            onClick={() => navigate("/dashboard/form-builder")}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Formulário
+          </button>
+          <button
             onClick={handleLogout}
             className="text-sm text-red-600 hover:underline"
           >

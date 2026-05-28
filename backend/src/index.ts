@@ -3,6 +3,7 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import authRoutes from "./routes/auth";
 import providerRoutes from "./routes/providers";
+import formConfigRoutes from "./routes/formConfig";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,7 @@ app.use(express.json());
 app.get("/health", (_req, res) => res.json({ ok: true }));
 app.use("/api/auth", authRoutes);
 app.use("/api/providers", providerRoutes);
+app.use("/api/form-config", formConfigRoutes);
 
 app.listen(PORT, () => {
   console.log(`Backend rodando em http://localhost:${PORT}`);

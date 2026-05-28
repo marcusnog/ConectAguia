@@ -4,6 +4,7 @@ import CadastroPage from "@/pages/CadastroPage";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import TermosPage from "@/pages/TermosPage";
+import FormBuilderPage from "@/pages/FormBuilderPage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { manager, isLoading } = useAuth();
@@ -24,6 +25,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <DashboardPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dashboard/form-builder"
+            element={
+              <PrivateRoute>
+                <FormBuilderPage />
               </PrivateRoute>
             }
           />

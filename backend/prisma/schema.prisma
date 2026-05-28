@@ -30,6 +30,7 @@ model Provider {
   zipCode            String?        @map("zip_code")
   serviceType        String         @map("service_type")
   serviceDescription String?        @map("service_description")
+  extraFields        Json?          @map("extra_fields")
   status             ProviderStatus @default(PENDING)
   termsAccepted      Boolean        @map("terms_accepted")
   termsVersion       String         @map("terms_version")
@@ -39,6 +40,46 @@ model Provider {
   consentLogs ConsentLog[]
 
   @@map("providers")
+}
+
+model FormSchema {
+  id          String      @id @default(cuid())
+  version     Int         @default(1)
+  published   Boolean     @default(false)
+  publishedAt DateTime?   @map("published_at")
+  fields      FormField[]
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("form_schemas")
+}
+
+model FormField {
+  id          String     @id @default(cuid())
+  schemaId    String     @map("schema_id")
+  schema      FormSchema @relation(fields: [schemaId], references: [id], onDelete: Cascade)
+  key         String
+  label       String
+  type        FieldType
+  placeholder String?
+  required    Boolean    @default(false)
+  order       Int
+  options     String[]
+  minLength   Int?       @map("min_length")
+  maxLength   Int?       @map("max_length")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@map("form_fields")
+}
+
+enum FieldType {
+  TEXT
+  EMAIL
+  PHONE
+  NUMBER
+  TEXTAREA
+  SELECT
+  CHECKBOX
 }
 
 model ConsentLog {
