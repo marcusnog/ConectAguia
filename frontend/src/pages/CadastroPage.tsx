@@ -201,7 +201,7 @@ export default function CadastroPage() {
             <span className="text-sm text-[#44474c]">
               Li e aceito os{" "}
               <a
-                href="/termos"
+                href={`${import.meta.env.BASE_URL}termos`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#0054cd] hover:underline font-medium"

@@ -65,7 +65,7 @@ No serviço backend do Railway → **Variables**:
 | `JWT_SECRET` | string aleatória forte (min. 32 chars) |
 | `JWT_EXPIRES_IN` | `8h` |
 | `NODE_ENV` | `production` |
-| `TERMS_VERSION` | `v1.0-teste` |
+| `TERMS_VERSION` | `v1.0` |
 | `PORT` | `3001` |
 
 ---
